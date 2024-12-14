@@ -9,7 +9,8 @@ ROOT_FINGERPRINT = {
     'definitions': list,
     'lat_embeddings': list,
     'eng_embeddings': list,
-    'root_lemmata_info': LargeDict
+    'root_lemmata_info': LargeDict,
+    'info': dict
 }
 
 CORPUS_FINGERPRINT = {

@@ -10,6 +10,7 @@ from config import ALLOWED_LEMMATA, WWW_EXPR
 from config import SENTENCE_TRANSFORMER_MODEL as ENG_MODEL
 from utils import Checkpointer
 from utils import senses
+from utils import strfseconds
 
 
 def preprocess(text_fpath: Path,
@@ -38,7 +39,7 @@ def preprocess(text_fpath: Path,
         r = root_ckpt.load()
 
         if not c.meta:
-            c.meta = {'completed': -1, 'total': len(chunks)}
+            c.meta = {'total': len(chunks)}
             start = 0
             print(f'Starting from scratch.')
         else:
@@ -86,8 +87,19 @@ def preprocess(text_fpath: Path,
                 sents = model.encode(new_definitions)
                 r.definitions.extend(new_definitions)
                 r.eng_embeddings.extend(sents)
-        
+
+            r.info['num_lemmata'] = len(r.root_lemmata_info)
+            c.meta['num_lemmata'] = len(c.corpus_lemmata_info)
             c.meta['completed'] = chunk_index
+            if iter.format_dict['rate'] is not None:
+                c.meta['eta'] = '+' + strfseconds(
+                    (iter.format_dict['total'] - chunk_index - 1) / iter.format_dict['rate']
+                )
+            
+            assert r.info['num_lemmata'] == len(r.existing_lemmata) == len(r.lat_embeddings)
+            if english_embeddings:
+                assert len(r.definitions) == len(r.eng_embeddings)
+            
             root_ckpt.save(r)
             corpus_ckpt.save(c)
     

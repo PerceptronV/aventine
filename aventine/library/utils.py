@@ -14,10 +14,12 @@ def randkey(existing=[], length=20):
     return key
 
 
-def _clock_analysis(start, end, name=None):
-    duration = end - start
+def strfseconds(duration):
     trunc = int(duration)
-    signature = f"{trunc//3600:02d}:{(trunc%3600)//60:02d}:{trunc%60:02d}.{int((duration-trunc)*1000)}"
+    return f"{trunc//3600:02d}:{(trunc%3600)//60:02d}:{trunc%60:02d}.{int((duration-trunc)*1000)}"
+
+def _clock_analysis(start, end, name=None):
+    signature = strfseconds(end - start)
     
     if name is None:
         print(f"Process ran in time {signature}")
@@ -90,9 +92,21 @@ def safely(save_func):
     def wrapper(obj, fpath: Path):
         _tmp_fpath = fpath.with_suffix('.tmp')
         ret = save_func(obj, _tmp_fpath)
-        os.remove(fpath)
+        if os.path.exists(fpath):
+            os.remove(fpath)
         os.rename(_tmp_fpath, fpath)
         return ret
+    return wrapper
+
+def carefully(load_func):
+    def wrapper(fpath: Path):
+        _tmp_fpath = fpath.with_suffix('.tmp')
+        if os.path.exists(_tmp_fpath):
+            raise FileExistsError(
+                f'{_tmp_fpath} exists, the last checkpoint may have been corrupted during saving.'
+            )
+        obj = load_func(fpath)
+        return obj
     return wrapper
 
 @safely
@@ -105,10 +119,12 @@ def json_dump(obj, fpath: Path):
     with open(fpath, 'w', encoding='utf-8') as f:
         json.dump(obj, f, indent=4)
 
+@carefully
 def pickle_load(fpath):
     with open(fpath, 'rb') as f:
         return pkl.load(f)
 
+@carefully
 def json_load(fpath):
     with open(fpath, 'r', encoding='utf-8') as f:
         return json.load(f)
