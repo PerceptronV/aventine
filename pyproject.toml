@@ -1,0 +1,14 @@
+[project]
+name = "aventine"
+version = "0.0.1"
+description = "Exploring objects of the Roman world through literature."
+dependencies = [
+    "flask", "cltk", "beautifulsoup4", "lxml"
+]
+
+[build-system]
+requires = ["flit_core<4"]
+build-backend = "flit_core.buildapi"
+
+[project.optional-dependencies]
+english = ["sentence_transformers"]
