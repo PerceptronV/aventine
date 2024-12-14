@@ -58,7 +58,7 @@ def senses(word, tool_dir, expr=r"[a-zA-Z1-9,./;()\[\]\s]+\n([a-zA-Z1-9,./();\s]
                                 shell=True,
                                 text=True,
                                 cwd=tool_dir)
-    process.stdin.write(os.linesep)
+    process.stdin.write(os.linesep * 5)
     process.stdin.flush()
     output = process.stdout.read().strip()
     
