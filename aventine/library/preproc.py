@@ -5,6 +5,7 @@ from pathlib import Path
 
 from cltk import NLP
 
+from config import CHUNK_SEP
 from config import ROOT_FINGERPRINT, CORPUS_FINGERPRINT
 from config import ALLOWED_LEMMATA, WWW_EXPR
 from config import SENTENCE_TRANSFORMER_MODEL as ENG_MODEL
@@ -13,10 +14,8 @@ from utils import senses
 from utils import strfseconds
 
 
-def preprocess(text_fpath: Path,
+def preprocess(file_metadata,
                save_dir: Path,
-               key: str,
-               title: str = None,
                english_embeddings: bool = True,
                tool_dir: Path = None,
                eng_model: str = ENG_MODEL):
@@ -25,12 +24,12 @@ def preprocess(text_fpath: Path,
         from sentence_transformers import SentenceTransformer
         model = SentenceTransformer(eng_model, trust_remote_code=True)
     
-    text_fpath, save_dir = Path(text_fpath), Path(save_dir)
+    text_fpath, save_dir = Path(file_metadata['txt_fpath']), Path(save_dir)
+    name = file_metadata['title']
+    key = file_metadata['key']
     
     cltk_nlp = NLP(language="lat")
     cltk_nlp.pipeline.processes.pop(-1)     # get rid of lexicon
-
-    name = title if title is not None else key
 
     def run_pipeline(chunks):
         root_ckpt = Checkpointer(save_dir / 'root', ROOT_FINGERPRINT)
@@ -93,7 +92,7 @@ def preprocess(text_fpath: Path,
             c.meta['completed'] = chunk_index
             if iter.format_dict['rate'] is not None:
                 c.meta['eta'] = '+' + strfseconds(
-                    (iter.format_dict['total'] - chunk_index - 1) / iter.format_dict['rate']
+                    (iter.format_dict['total'] - iter.format_dict['n'] - 1) / iter.format_dict['rate']
                 )
             
             assert r.info['num_lemmata'] == len(r.existing_lemmata) == len(r.lat_embeddings)
@@ -106,10 +105,4 @@ def preprocess(text_fpath: Path,
     with open(text_fpath, 'r', encoding='utf-8') as f:
         corpus = f.read()
     
-    run_pipeline(corpus.split('\n'))
-
-preprocess('../data/sources/ecnmhwzfxqbbktcfubxy.txt',
-           '../data/dump',
-           'ecnmhwzfxqbbktcfubxy',
-           title='naturalis historia',
-           tool_dir='../tools/bin')
+    run_pipeline(corpus.split(CHUNK_SEP))
