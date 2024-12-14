@@ -30,5 +30,14 @@ CHUNK_SEP = '\n'
 
 QUICKSTART_DOCUMENTS = {
     'Aeneid': '1999.02.0055',
-    'Naturalis Historia': '1999.02.0138'
+    'Naturalis Historia': '1999.02.0138',
+    'Georgicon': '1999.02.0059',
+    'Annales': '1999.02.0077',
+    'Metamorphoses': '1999.02.0029',
+    'De bello Gallico': '1999.02.0002',
+    'Carmina': '1999.02.0003',
+    'Historiae': '1999.02.0079',
+    'Tristia': '2008.01.0492',
+    'De Bello Civili': '1999.02.0075',
+    'Ex Ponto': '2008.01.0493'
 }
