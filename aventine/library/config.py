@@ -24,20 +24,17 @@ ALLOWED_LEMMATA = re.compile(r"[a-zA-Z_\-,.'!/]+")
 
 WWW_EXPR = r"[a-zA-Z1-9,./;()\[\]\s]+\n([a-zA-Z1-9,./();\s]+)"
 
+SMALL_SEP = ' '
 CHUNK_SEP = '\n'
 
 ###############################
 
 QUICKSTART_DOCUMENTS = {
     'Aeneid': '1999.02.0055',
-    'Naturalis Historia': '1999.02.0138',
     'Georgicon': '1999.02.0059',
+    'Naturalis Historia': '1999.02.0138',
     'Annales': '1999.02.0077',
-    'Metamorphoses': '1999.02.0029',
-    'De bello Gallico': '1999.02.0002',
-    'Carmina': '1999.02.0003',
     'Historiae': '1999.02.0079',
-    'Tristia': '2008.01.0492',
-    'De Bello Civili': '1999.02.0075',
-    'Ex Ponto': '2008.01.0493'
+    'Carmina': '1999.02.0003',
+    'Metamorphoses': '1999.02.0029'
 }

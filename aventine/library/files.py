@@ -8,8 +8,7 @@ from bs4 import BeautifulSoup
 from bs4.element import Tag
 
 
-from config import CHUNK_SEP
-from config import QUICKSTART_DOCUMENTS
+from config import SMALL_SEP, CHUNK_SEP
 from utils import randkey
 
 
@@ -41,7 +40,8 @@ def perseus_xml_get(
     save_dir: Path,
     existing_keys: list = [],
     text_stem: str = 'https://www.perseus.tufts.edu/hopper/text?doc=Perseus:text:{}',
-    server_stem: str = 'https://www.perseus.tufts.edu/hopper/{}'
+    server_stem: str = 'https://www.perseus.tufts.edu/hopper/{}',
+    overwrite: bool = False
 ) -> dict:
     
     save_dir = Path(save_dir)
@@ -57,16 +57,19 @@ def perseus_xml_get(
     schema = f"{'+'.join(schema_example.split(' ')[:-1])}+{{}}"
 
     xml_data = requests.get(xml_url)
-    _key = randkey(existing_keys)
-    with open(save_dir / f'{_key}.xml', "wb") as f:
-        f.write(xml_data.content)
+    _key = text_id # randkey(existing_keys)
+    fpath = save_dir / f'{_key}.xml'
+
+    if overwrite or not os.path.exists(fpath):
+        with open(fpath, "wb") as f:
+            f.write(xml_data.content)
 
     return {
         'key': _key,
         'text_id': text_id,
         'schema': schema,
         'save_dir': str(save_dir),
-        'xml_fpath': str(save_dir / f'{_key}.xml'),
+        'xml_fpath': str(fpath),
         'title': title,
         'info': info
     }
@@ -76,33 +79,68 @@ def ext(id, new_ext):
         return new_ext
     return f'{id}.{new_ext}'
 
-_whitespaces = re.compile(r'[\n\r\t]+')
+def signature(tag):
+    return (
+        tag.name,
+        tag['type'] if 'type' in tag.attrs else None,
+        tag['unit'] if 'unit' in tag.attrs else None
+    )
 
-def recursive_parse(
-    element: Tag,
-    id: str,
-    data: dict,
-    root = True
+_whitespaces = re.compile(rf'[{CHUNK_SEP}\r\t]+')
+
+def linear_parse(
+    body: Tag
 ) -> str:
     
-    if element.name == 'milestone' and 'n' in element.attrs:
-        data['text'] = data['text'].strip(' ') + CHUNK_SEP
-        data['index'].append(ext(id, element['n']))
-        return data
+    collated = ''
+    index = []
+    levels, signatures = [], []
+    current_signature = None
+    began = False
+    written = False
 
-    if root or 'n' in element.attrs:
-        id = ext(id, element['n']) if 'n' in element.attrs else id
-        for ele in element.find_all(recursive=False):
-            recursive_parse(ele, id, data, root=False)
-        return data
-    
-    data['text'] += re.sub(_whitespaces, ' ', element.text).strip(' ') + ' '
-    return data
+    for element in body.find_all():
+        if 'n' in element.attrs and element.name not in {'l'}:
+            began = True
+            written = False
+            if signature(element) == current_signature:
+                levels.pop()
+                levels.append(element['n'])
+            else:
+                current_signature = signature(element)
+                try:
+                    end = signatures.index(current_signature)
+                except:
+                    end = len(signatures)
+                levels = levels[:end] + [element['n']]
+                signatures = signatures[:end] + [current_signature]
+        
+        else:
+            new_text = re.sub(_whitespaces, ' ', element.text).strip()
+            if began and new_text != '':
+                if not written:
+                    collated = collated.strip() + CHUNK_SEP
+                    index.append('.'.join(levels))
+                    written = True
+                collated += new_text + SMALL_SEP
+
+    collated = re.sub(r'[ ]+', ' ', collated)
+    return collated.strip(), index
 
 def perseus_xml2txt(
     metadata: dict,
-    save_dir: Path
+    save_dir: Path,
+    overwrite: bool = False
 ) -> dict:
+    
+    save_dir = Path(save_dir)
+    os.makedirs(save_dir / 'metadata', exist_ok=True)
+    txt_path = save_dir / f"{metadata['key']}.txt"
+    json_path = save_dir / 'metadata' / f"{metadata['key']}.json"
+    
+    if not overwrite and os.path.exists(json_path):
+        with open(json_path, 'r') as f:
+            return json.load(f)
     
     with open(metadata['xml_fpath'], 'r', encoding='utf-8') as f:
         xml_data = f.read()
@@ -112,29 +150,24 @@ def perseus_xml2txt(
 
     title, author, editor = (quick_extract(i) for i in ('title', 'author', 'editor'))
 
-    data = {'text': '', 'index': []}
     body = soup.find('body')
-    _ = recursive_parse(body, '', data, root=True)
-    collated = re.sub(r'\n[ ]+', '\n', data['text']).strip()
-    collated = re.sub(r'[ ]+', ' ', collated).strip()
-    
-    save_dir = Path(save_dir)
-    os.makedirs(save_dir / 'metadata', exist_ok=True)
+    collated, index = linear_parse(body)
 
     metadata.update({'title': title,
                      'author': author,
                      'editor': editor,
-                     'txt_fpath': str(save_dir / f"{metadata['key']}.txt")})
+                     'txt_fpath': str(txt_path)})
     
-    assert len(data['index']) == len(collated.split(CHUNK_SEP))
+    assert len(index) == len(collated.split(CHUNK_SEP))
 
-    with open(save_dir / f"{metadata['key']}.txt", 'w', encoding='utf-8') as f:
+    with open(txt_path, 'w', encoding='utf-8') as f:
         f.write(collated)
-    with open(save_dir / 'metadata' / f"{metadata['key']}.json", 'w', encoding='utf-8') as f:
-        json.dump(metadata | {
-            'len_index': len(data['index']),
-            'index': data['index']
-        }, f, indent=4)
+    with open(json_path, 'w', encoding='utf-8') as f:
+        metadata |= {
+            'len_index': len(index),
+            'index': index
+        }
+        json.dump(metadata, f, indent=4)
     
     return metadata
 
