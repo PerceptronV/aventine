@@ -7,7 +7,7 @@ from cltk import NLP
 
 from config import CHUNK_SEP
 from config import ROOT_FINGERPRINT, CORPUS_FINGERPRINT
-from config import ALLOWED_LEMMATA, WWW_EXPR
+from config import ALLOWED_LEMMATA, BAD_LEMMATA, WWW_EXPR
 from config import SENTENCE_TRANSFORMER_MODEL as ENG_MODEL
 from utils import Checkpointer
 from utils import senses
@@ -56,7 +56,7 @@ def preprocess(file_metadata,
             filter, new_lemmata = [], []
             for i in word_filter:
                 lemma, pos = doc.lemmata[i], doc.pos[i]
-                if not re.fullmatch(ALLOWED_LEMMATA, lemma):
+                if not re.fullmatch(ALLOWED_LEMMATA, lemma) or lemma in BAD_LEMMATA:
                     continue
                 _k = f'{lemma} ({pos})'
                 if _k in r.existing_lemmata:
