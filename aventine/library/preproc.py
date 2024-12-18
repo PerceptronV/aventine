@@ -5,13 +5,13 @@ from pathlib import Path
 
 from cltk import NLP
 
-from config import CHUNK_SEP
-from config import ROOT_FINGERPRINT, CORPUS_FINGERPRINT
-from config import ALLOWED_LEMMATA, BAD_LEMMATA, WWW_EXPR
-from config import SENTENCE_TRANSFORMER_MODEL as ENG_MODEL
-from utils import Checkpointer
-from utils import senses
-from utils import strfseconds
+from aventine.library.config import CHUNK_SEP
+from aventine.library.config import ROOT_FINGERPRINT, CORPUS_FINGERPRINT
+from aventine.library.config import ALLOWED_LEMMATA, BAD_LEMMATA, WWW_EXPR
+from aventine.library.config import SENTENCE_TRANSFORMER_MODEL as ENG_MODEL
+from aventine.library.utils import Checkpointer
+from aventine.library.utils import senses
+from aventine.library.utils import strfseconds
 
 
 def preprocess(file_metadata,

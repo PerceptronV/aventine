@@ -8,8 +8,8 @@ from bs4 import BeautifulSoup
 from bs4.element import Tag
 
 
-from config import SMALL_SEP, CHUNK_SEP
-from utils import randkey
+from aventine.library.config import SMALL_SEP, CHUNK_SEP
+from aventine.library.utils import randkey
 
 
 def perseus_collect(

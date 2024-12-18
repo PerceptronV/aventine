@@ -1,6 +1,6 @@
 import re
 
-from utils import LargeDict
+from aventine.library.utils import LargeDict
 
 
 ROOT_FINGERPRINT = {
@@ -21,7 +21,7 @@ CORPUS_FINGERPRINT = {
 SENTENCE_TRANSFORMER_MODEL = 'Alibaba-NLP/gte-base-en-v1.5'
 
 ALLOWED_LEMMATA = re.compile(r"[a-zA-Z_\-,.'!/]+")
-BAD_LEMMATA = {'con'}
+BAD_LEMMATA = {'con', 'unietvicensimus'}
 
 WWW_EXPR = r"[a-zA-Z1-9,./;()\[\]\s]+\n([a-zA-Z1-9,./();\s]+)"
 
