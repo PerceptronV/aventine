@@ -173,3 +173,7 @@ data
 # Extracted tools
 aventine/tools/*
 !aventine/tools/dist
+
+# Development debugging
+*.dev.ipynb
+*.dev.py
