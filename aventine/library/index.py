@@ -1,35 +1,39 @@
 import re
-import numpy as np
 from tqdm import tqdm
 from pathlib import Path
 
+import cltk
 from cltk import NLP
+from sentence_transformers import SentenceTransformer
 
 from aventine.library.config import CHUNK_SEP
 from aventine.library.config import ROOT_FINGERPRINT, CORPUS_FINGERPRINT
-from aventine.library.config import ALLOWED_LEMMATA, BAD_LEMMATA, WWW_EXPR
+from aventine.library.config import ALLOWED_LEMMATA, BAD_LEMMATA
 from aventine.library.config import SENTENCE_TRANSFORMER_MODEL as ENG_MODEL
+from aventine.library.config import WORD_EMBEDDING_MODEL as LAT_MODEL
 from aventine.library.utils import Checkpointer
-from aventine.library.utils import senses
-from aventine.library.utils import strfseconds
+from aventine.library.utils import meanings
+from aventine.library.utils import strfseconds, get_null, replace_if_none
 
 
 def preprocess(file_metadata,
                save_dir: Path,
-               english_embeddings: bool = True,
-               tool_dir: Path = None,
+               tool_dir: Path,
                eng_model: str = ENG_MODEL):
-    
-    if english_embeddings:
-        from sentence_transformers import SentenceTransformer
-        model = SentenceTransformer(eng_model, trust_remote_code=True)
+        
+    lat_model = LAT_MODEL('lat')
+    eng_model = SentenceTransformer(eng_model, trust_remote_code=True)
+    lat_none, _ = get_null(lat_model, eng_model)
     
     text_fpath, save_dir = Path(file_metadata['txt_fpath']), Path(save_dir)
     name = file_metadata['title']
     key = file_metadata['key']
     
     cltk_nlp = NLP(language="lat")
-    cltk_nlp.pipeline.processes.pop(-1)     # get rid of lexicon
+    cltk_nlp.pipeline.processes = [
+        cltk.alphabet.processes.LatinNormalizeProcess,
+        cltk.dependency.processes.LatinStanzaProcess
+    ]
 
     def run_pipeline(chunks):
         root_ckpt = Checkpointer(save_dir / 'root', ROOT_FINGERPRINT)
@@ -48,44 +52,47 @@ def preprocess(file_metadata,
         iter.set_description(name)
 
         for chunk_index in iter:
-            text = chunks[chunk_index]
 
+            text = chunks[chunk_index]
             doc = cltk_nlp.analyze(text)
 
-            word_filter = [e for e, pos in enumerate(doc.pos) if pos != 'PUNCT']
-            filter, new_lemmata = [], []
-            for i in word_filter:
-                lemma, pos = doc.lemmata[i], doc.pos[i]
-                if not re.fullmatch(ALLOWED_LEMMATA, lemma) or lemma in BAD_LEMMATA:
+            new_lemmata, new_definitions, lemmatised = [], [], ''
+            subbar = tqdm(zip(doc.lemmata, doc.pos, doc.tokens), leave=False)
+
+            for _lemma, pos, tok in subbar:
+                subbar.set_description(_lemma)
+
+                if pos == 'PUNCT' or not re.fullmatch(ALLOWED_LEMMATA, _lemma) or _lemma in BAD_LEMMATA:
+                    lemmatised += _lemma + ' '
                     continue
+
+                www_lemma, www_meaning = meanings(tok, tool_dir=tool_dir)
+                lemma = _lemma if www_lemma == '' else www_lemma
                 _k = f'{lemma} ({pos})'
+
                 if _k in r.existing_lemmata:
                     if key not in r.root_lemmata_info[_k]['texts']:
                         r.root_lemmata_info[_k]['texts'].add(key)
-                        c.corpus_lemmata_info[_k] = {'count': 1, 'loc': [i]}
+                        c.corpus_lemmata_info[_k] = {'count': 1, 'loc': [chunk_index]}
                     else:
                         c.corpus_lemmata_info[_k]['count'] += 1
-                        c.corpus_lemmata_info[_k]['loc'].append(i)
+                        c.corpus_lemmata_info[_k]['loc'].append(chunk_index)
+                
                 else:
-                    filter.append(i)
-                    new_lemmata.append(lemma)
                     r.existing_lemmata.add(_k)
                     r.root_lemmata_info[_k] = {'texts': {key}}
-                    c.corpus_lemmata_info[_k] = {'count': 1, 'loc': [i]}
+                    c.corpus_lemmata_info[_k] = {'count': 1, 'loc': [chunk_index]}
 
+                    new_lemmata.append(lemma)
+                    new_definitions.append(www_meaning)
+
+            r.lemmatised += lemmatised.strip()               
             r.lemmata_arr.extend(new_lemmata)
-            r.lat_embeddings.extend(np.array(doc.embeddings)[filter])
-
-            if english_embeddings:
-                pbar = tqdm(new_lemmata, leave=False)
-                new_definitions = []
-                for lemma in pbar:
-                    pbar.set_description(lemma)
-                    new_definitions.append(senses(lemma, tool_dir, expr=WWW_EXPR))
-                
-                sents = model.encode(new_definitions)
-                r.definitions.extend(new_definitions)
-                r.eng_embeddings.extend(sents)
+            r.lat_embeddings.extend([
+                replace_if_none(lat_model.get_word_vector(w), lat_none) for w in new_lemmata
+            ])
+            r.definitions.extend(new_definitions)
+            r.eng_embeddings.extend(eng_model.encode(new_definitions))
 
             r.info['num_lemmata'] = len(r.root_lemmata_info)
             c.meta['num_lemmata'] = len(c.corpus_lemmata_info)
@@ -96,8 +103,6 @@ def preprocess(file_metadata,
                 )
             
             assert r.info['num_lemmata'] == len(r.existing_lemmata) == len(r.lat_embeddings)
-            if english_embeddings:
-                assert len(r.definitions) == len(r.eng_embeddings)
             
             root_ckpt.save(r)
             corpus_ckpt.save(c)

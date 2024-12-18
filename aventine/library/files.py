@@ -2,6 +2,7 @@ import os
 import re
 import json
 import requests
+import unicodedata
 from pathlib import Path
 from urllib.parse import unquote
 from bs4 import BeautifulSoup
@@ -9,6 +10,7 @@ from bs4.element import Tag
 
 
 from aventine.library.config import SMALL_SEP, CHUNK_SEP
+from aventine.library.config import ALLOWED_SYMBOLS, ALLOWED_PUNCTS
 from aventine.library.utils import randkey
 
 
@@ -86,6 +88,17 @@ def signature(tag):
         tag['unit'] if 'unit' in tag.attrs else None
     )
 
+
+def normalise_text(text: str, allowed=ALLOWED_SYMBOLS):
+    text = text.lower()
+    text = unicodedata.normalize('NFKC', text)
+    text = re.sub(rf'[^{allowed}]', '', text)
+    text = re.sub(rf'([{ALLOWED_PUNCTS}])', r' \1 ', text)
+    text = re.sub(r'[ ]+', ' ', text)
+    text = text.strip()
+    return text
+
+
 _whitespaces = re.compile(rf'[{CHUNK_SEP}\r\t]+')
 
 def linear_parse(
@@ -124,8 +137,8 @@ def linear_parse(
                     written = True
                 collated += new_text + SMALL_SEP
 
-    collated = re.sub(r'[ ]+', ' ', collated)
-    return collated.strip(), index
+    return normalise_text(collated), index
+
 
 def perseus_xml2txt(
     metadata: dict,

@@ -4,6 +4,7 @@ import json
 import time
 import random
 import subprocess
+import numpy as np
 import pickle as pkl
 from pathlib import Path
 
@@ -47,10 +48,48 @@ def clock_title(name):
     return wrapper
 
 
-def odds(arr):
-    return [2*i+1 for i in range(len(arr)//2)]
+_flag = re.compile(r'\[[A-Z]+\]')
+_unk = re.compile(r'UNKNOWN')
 
-def senses(word, tool_dir, expr=r"[a-zA-Z1-9,./;()\[\]\s]+\n([a-zA-Z1-9,./();\s]+)"):
+def combine(meaning, meta):
+    if meaning == '':
+        return meta.strip()
+    return meaning + f" [root/prefix/suffix information: {meta}]"
+
+def parse_www_output(output, word):
+    lines = output.split('\n')
+
+    body = []
+    meta = []
+    greedy = []
+    lemma = ''
+    matched = False
+    triggered = False
+
+    for i in lines:
+        if re.search(_flag, i):
+            if triggered:
+                lemma = ''
+            else:
+                lemma = i.split(',')[0]
+                triggered = True
+            matched = i.startswith(word)
+        elif matched:
+            greedy.append(i.strip())
+        elif triggered:
+            body.append(i.strip())
+        elif i.strip() != '':
+            meta.append(i.strip())
+    
+    meta = ' '.join(meta).strip()
+    greedy = ' '.join(greedy).strip()
+    if greedy != '':
+        return combine(greedy, meta), lemma
+
+    body = ' '.join(body).strip()
+    return combine(body, meta), lemma
+
+def meanings(word, tool_dir):
     process = subprocess.Popen(["meanings", word],
                                 stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE,
@@ -60,22 +99,13 @@ def senses(word, tool_dir, expr=r"[a-zA-Z1-9,./;()\[\]\s]+\n([a-zA-Z1-9,./();\s]
                                 cwd=tool_dir)
     process.stdin.write(os.linesep * 5)
     process.stdin.flush()
-    output = process.stdout.read().strip()
+    out = process.stdout.read().strip()
+    out = re.sub(r'\r', '', out)
+
+    if re.search(_unk, out):
+        return '', ''
     
-    lines = output.split('\n')
-
-    matches = re.findall(word+expr, output)
-
-    if len(matches) != 0:
-        return ' '.join([m.strip() for m in matches])
-
-    odd_lines = []
-
-    for i in range(len(lines)//2):
-        if (line := lines[2*i+1].strip()):
-            odd_lines.append(line)
-
-    return ' '.join(odd_lines)
+    return parse_www_output(out, word)
 
 
 class Bundler():
@@ -119,6 +149,11 @@ def json_dump(obj, fpath: Path):
     with open(fpath, 'w', encoding='utf-8') as f:
         json.dump(obj, f, indent=4)
 
+@safely
+def text_dump(obj, fpath: Path):
+    with open(fpath, 'w', encoding='utf-8') as f:
+        f.write(obj)
+
 @carefully
 def pickle_load(fpath):
     with open(fpath, 'rb') as f:
@@ -129,21 +164,30 @@ def json_load(fpath):
     with open(fpath, 'r', encoding='utf-8') as f:
         return json.load(f)
 
+@carefully
+def text_load(fpath: Path):
+    with open(fpath, 'r', encoding='utf-8') as f:
+        return f.read()
+
 
 class Checkpointer():
     save_formats: dict = {
         None: (pickle_dump, 'pkl'),
+        LargeDict: (pickle_dump, 'ld.pkl'),
+        np.ndarray: (pickle_dump, 'np.pkl'),
         set: (pickle_dump, 'set.pkl'),
         list: (pickle_dump, 'pkl'),
-        LargeDict: (pickle_dump, 'pkl'),
-        dict: (json_dump, 'json')
+        dict: (json_dump, 'json'),
+        str: (text_dump, 'txt')
     }
     load_formats: dict = {
         None: (pickle_load, 'pkl'),
+        LargeDict: (pickle_load, 'ld.pkl'),
+        np.ndarray: (pickle_load, 'np.pkl'),
         set: (pickle_load, 'set.pkl'),
         list: (pickle_load, 'pkl'),
-        LargeDict: (pickle_load, 'pkl'),
-        dict: (json_load, 'json')
+        dict: (json_load, 'json'),
+        str: (text_load, 'txt')
     }
 
     def __init__(self,
@@ -184,3 +228,15 @@ class Checkpointer():
                 setattr(bundle, prop, obj)
         
         return bundle
+
+
+def get_null(lat_model, eng_model):
+    return (
+        np.full_like(lat_model.get_word_vector('aventinus'), fill_value=1e-9),
+        eng_model.encode('')
+    )
+
+def replace_if_none(val, alt):
+    if val is None:
+        return alt
+    return val

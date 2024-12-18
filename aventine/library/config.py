@@ -1,32 +1,38 @@
 import re
+import numpy as np
+
+import cltk
 
 from aventine.library.utils import LargeDict
 
 
 ROOT_FINGERPRINT = {
-    'existing_lemmata': set,
+    'lemmatised': str,
     'lemmata_arr': list,
-    'definitions': list,
     'lat_embeddings': list,
+    'definitions': list,
     'eng_embeddings': list,
-    'root_lemmata_info': LargeDict,
+    'root_lemmata_info': dict,
+    'existing_lemmata': set,
     'info': dict
 }
 
 CORPUS_FINGERPRINT = {
     'meta': dict,
-    'corpus_lemmata_info': LargeDict
+    'corpus_lemmata_info': dict
 }
 
 SENTENCE_TRANSFORMER_MODEL = 'Alibaba-NLP/gte-base-en-v1.5'
-
-ALLOWED_LEMMATA = re.compile(r"[a-zA-Z_\-,.'!/]+")
-BAD_LEMMATA = {'con', 'unietvicensimus'}
-
-WWW_EXPR = r"[a-zA-Z1-9,./;()\[\]\s]+\n([a-zA-Z1-9,./();\s]+)"
+WORD_EMBEDDING_MODEL = cltk.embeddings.embeddings.Word2VecEmbeddings
 
 SMALL_SEP = ' '
 CHUNK_SEP = '\n'
+
+ALLOWED_PUNCTS = r",.?!()"
+ALLOWED_SYMBOLS = r"a-zA-Z" + ALLOWED_PUNCTS + r" \n"
+
+ALLOWED_LEMMATA = re.compile(r"[a-zA-Z]+")
+BAD_LEMMATA = {'con', 'unietvicensimus'}
 
 ###############################
 
