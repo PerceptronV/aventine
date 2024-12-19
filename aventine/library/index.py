@@ -9,8 +9,8 @@ from sentence_transformers import SentenceTransformer
 from aventine.library.config import CHUNK_SEP
 from aventine.library.config import ROOT_FINGERPRINT, CORPUS_FINGERPRINT
 from aventine.library.config import ALLOWED_LEMMATA, BAD_LEMMATA
-from aventine.library.config import SENTENCE_TRANSFORMER_MODEL as ENG_MODEL
-from aventine.library.config import WORD_EMBEDDING_MODEL as LAT_MODEL
+from aventine.library.config_ml import SENTENCE_TRANSFORMER_MODEL as ENG_MODEL
+from aventine.library.config_ml import WORD_EMBEDDING_MODEL as LAT_MODEL
 from aventine.library.wordvec import train_word2vec_model
 from aventine.library.utils import Checkpointer
 from aventine.library.utils import meanings

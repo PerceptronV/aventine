@@ -1,8 +1,6 @@
-import os
-
 from gensim.models import Word2Vec
 
-from config import WORD2VEC_EPOCHS, WORD2VEC_DIMS
+from aventine.library.config import WORD2VEC_EPOCHS, WORD2VEC_DIMS
 
 
 class Corpus:

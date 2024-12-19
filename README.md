@@ -9,6 +9,22 @@
 
 ## Installation
 
+First ensure that you have an isolated Python environment set up (we encourage using [mamba](https://mamba.readthedocs.io/en/latest/) to manage environments). Aventine has been tested to work with Python 3.11.11.
+
+1. First run the following to clone and install Aventine:
+    ```bash
+    git clone https://PerceptronV/aventine
+    cd aventine
+    pip install -e .
+    ```
+
+2. Run the onboarding script to use pre-indexed data provided by the authors of Aventine. It is IMPORTANT that you run this command in the root directory of the repository; i.e. where you installed Aventine from.
+    ```bash
+    aventine-setup
+    ```
+
+3. Extract the [relevant binaries](./aventine/tools/dist/) of Whitaker's Words for your operating system into [`aventine/tools/bin`](./aventine/tools/bin/).
+
 ## Deployment
 
 Run the following to initialise the Aventine database:
@@ -21,11 +37,11 @@ Then run the following to spin up a debug server:
 flask --app flaskr run --debug
 ```
 
-For production,
+For production, set a private key.
 
 # License
 
-All of my code are licensed under the GNU General Public License 3.0, except for tool binaries in ([tools](aventine/tools/)). See the [README](aventine/tools/README.md) in that directory for attribution.
+All of my code are licensed under the GNU General Public License 3.0, except for tool binaries in ([tools](./aventine/tools/)). See the [README](./aventine/tools/README.md) in that directory for attribution.
 
 ```
 Aventine: Vector search for classical Latin texts.

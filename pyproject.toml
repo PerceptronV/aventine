@@ -11,5 +11,8 @@ dependencies = [
 requires = ["flit_core<4"]
 build-backend = "flit_core.buildapi"
 
+[project.scripts]
+aventine-setup = "aventine.library.onboarding:run"
+
 [project.optional-dependencies]
 dev = ["pandas"]
