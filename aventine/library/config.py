@@ -12,14 +12,14 @@ ROOT_FINGERPRINT = {
     'lat_embeddings': list,
     'definitions': list,
     'eng_embeddings': list,
-    'root_lemmata_info': dict,
+    'root_lemmata_info': LargeDict,
     'existing_lemmata': set,
     'info': dict
 }
 
 CORPUS_FINGERPRINT = {
     'meta': dict,
-    'corpus_lemmata_info': dict
+    'corpus_lemmata_info': LargeDict
 }
 
 SENTENCE_TRANSFORMER_MODEL = 'Alibaba-NLP/gte-base-en-v1.5'

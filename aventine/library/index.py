@@ -57,10 +57,8 @@ def preprocess(file_metadata,
             doc = cltk_nlp.analyze(text)
 
             new_lemmata, new_definitions, lemmatised = [], [], ''
-            subbar = tqdm(zip(doc.lemmata, doc.pos, doc.tokens), leave=False)
 
-            for _lemma, pos, tok in subbar:
-                subbar.set_description(_lemma)
+            for _lemma, pos, tok in zip(doc.lemmata, doc.pos, doc.tokens):
 
                 if pos == 'PUNCT' or not re.fullmatch(ALLOWED_LEMMATA, _lemma) or _lemma in BAD_LEMMATA:
                     lemmatised += _lemma + ' '
