@@ -6,7 +6,7 @@ from pathlib import Path
 from aventine.library.config import INDEX_DATA_GID, QUICKSTART_DOCUMENTS
 
 
-def run(
+def download(
         data_dir: Path = 'aventine/data'
     ):
 
