@@ -7,6 +7,7 @@ import subprocess
 import numpy as np
 import pickle as pkl
 from pathlib import Path
+import unicodedata
 
 
 def randkey(existing=[], length=20):
@@ -46,6 +47,17 @@ def clock_title(name):
             return ret
         return decor
     return wrapper
+
+
+
+def normalise_text(text: str, allowed_symbols, allowed_puncts):
+    text = text.lower()
+    text = unicodedata.normalize('NFKC', text)
+    text = re.sub(rf'[^{allowed_symbols}]', '', text)
+    text = re.sub(rf'([{allowed_puncts}])', r' \1 ', text)
+    text = re.sub(r'[ ]+', ' ', text)
+    text = text.strip()
+    return text
 
 
 _flag = re.compile(r'\[[A-Z]+\]')
