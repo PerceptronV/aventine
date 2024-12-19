@@ -92,7 +92,7 @@ def preprocess(file_metadata,
             ])
             r.definitions.extend(new_defs)
             r.eng_embeddings.extend(eng_model.encode(new_defs))
-            c.lemmatised += ' '.join(lemmata)
+            c.lemmatised += ' '.join(lemmata) + '\n'
 
             r.info['num_lemmata'] = len(r.root_lemmata_info)
             c.meta['num_lemmata'] = len(c.corpus_lemmata_info)
