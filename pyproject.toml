@@ -3,7 +3,8 @@ name = "aventine"
 version = "0.0.1"
 description = "Exploring objects of the Roman world through literature."
 dependencies = [
-    "flask", "cltk", "sentence_transformers", "beautifulsoup4", "lxml", "tqdm"
+    "flask", "cltk", "sentence_transformers", "gensim",
+    "beautifulsoup4", "lxml", "tqdm", "gdown"
 ]
 
 [build-system]

@@ -11,29 +11,30 @@ from aventine.library.config import ROOT_FINGERPRINT, CORPUS_FINGERPRINT
 from aventine.library.config import ALLOWED_LEMMATA, BAD_LEMMATA
 from aventine.library.config import SENTENCE_TRANSFORMER_MODEL as ENG_MODEL
 from aventine.library.config import WORD_EMBEDDING_MODEL as LAT_MODEL
+from aventine.library.wordvec import train_word2vec_model
 from aventine.library.utils import Checkpointer
 from aventine.library.utils import meanings
 from aventine.library.utils import strfseconds, get_null, replace_if_none
 
 
-def preprocess(file_metadata,
+lat_model = LAT_MODEL('lat')
+eng_model = SentenceTransformer(ENG_MODEL, trust_remote_code=True)
+lat_none, _ = get_null(lat_model, eng_model)
+
+cltk_nlp = NLP(language="lat")
+cltk_nlp.pipeline.processes = [
+    cltk.alphabet.processes.LatinNormalizeProcess,
+    cltk.dependency.processes.LatinStanzaProcess
+]
+
+
+def preprocess(file_metadata: dict,
                save_dir: Path,
-               tool_dir: Path,
-               eng_model_name: str = ENG_MODEL):
-        
-    lat_model = LAT_MODEL('lat')
-    eng_model = SentenceTransformer(eng_model_name, trust_remote_code=True)
-    lat_none, _ = get_null(lat_model, eng_model)
+               tool_dir: Path):
     
     text_fpath, save_dir = Path(file_metadata['txt_fpath']), Path(save_dir)
     name = file_metadata['title']
     key = file_metadata['key']
-    
-    cltk_nlp = NLP(language="lat")
-    cltk_nlp.pipeline.processes = [
-        cltk.alphabet.processes.LatinNormalizeProcess,
-        cltk.dependency.processes.LatinStanzaProcess
-    ]
 
     def run_pipeline(chunks):
         root_ckpt = Checkpointer(save_dir / 'root', ROOT_FINGERPRINT)
@@ -105,6 +106,14 @@ def preprocess(file_metadata,
             
             root_ckpt.save(r)
             corpus_ckpt.save(c)
+        
+        # Final word2vec pass
+        model = train_word2vec_model(
+            corpus_path=save_dir / key / 'lemmatised.txt'
+        )
+        model.save(str(save_dir / key / 'word2vec.model'))
+
+        return model
     
     with open(text_fpath, 'r', encoding='utf-8') as f:
         corpus = f.read()

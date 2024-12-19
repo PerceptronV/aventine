@@ -33,6 +33,9 @@ ALLOWED_SYMBOLS = r"a-z" + ALLOWED_PUNCTS + r" \n"
 ALLOWED_LEMMATA = re.compile(r"[a-zA-Z]+")
 BAD_LEMMATA = {'con', 'unietvicensimus'}
 
+WORD2VEC_EPOCHS = 30
+WORD2VEC_DIMS = 300
+
 ###############################
 
 QUICKSTART_DOCUMENTS = {

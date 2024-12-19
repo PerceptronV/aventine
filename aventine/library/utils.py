@@ -72,7 +72,7 @@ def combine(meaning, meta):
 
 def parse_www_output(output, word):
     if re.search(_unk, output):
-        return '', ''
+        return ''
     
     lines = output.split('\n')
 
