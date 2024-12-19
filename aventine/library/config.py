@@ -19,7 +19,7 @@ ROOT_FINGERPRINT = {
 
 CORPUS_FINGERPRINT = {
     'meta': dict,
-    'corpus_lemmata_info': LargeDict
+    'corpus_lemmata_info': dict
 }
 
 SENTENCE_TRANSFORMER_MODEL = 'Alibaba-NLP/gte-base-en-v1.5'

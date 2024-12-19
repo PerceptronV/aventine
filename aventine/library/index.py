@@ -19,10 +19,10 @@ from aventine.library.utils import strfseconds, get_null, replace_if_none
 def preprocess(file_metadata,
                save_dir: Path,
                tool_dir: Path,
-               eng_model: str = ENG_MODEL):
+               eng_model_name: str = ENG_MODEL):
         
     lat_model = LAT_MODEL('lat')
-    eng_model = SentenceTransformer(eng_model, trust_remote_code=True)
+    eng_model = SentenceTransformer(eng_model_name, trust_remote_code=True)
     lat_none, _ = get_null(lat_model, eng_model)
     
     text_fpath, save_dir = Path(file_metadata['txt_fpath']), Path(save_dir)
@@ -67,7 +67,7 @@ def preprocess(file_metadata,
                 www_lemma, www_meaning = meanings(tok, tool_dir=tool_dir)
                 lemma = _lemma if www_lemma == '' else www_lemma
                 lemmatised += lemma + ' '
-                _k = f'{lemma} ({pos})'
+                _k = lemma          # _k = f'{lemma} ({pos})'
 
                 if _k in r.existing_lemmata:
                     if key not in r.root_lemmata_info[_k]['texts']:

@@ -174,7 +174,6 @@ class Checkpointer():
     save_formats: dict = {
         None: (pickle_dump, 'pkl'),
         LargeDict: (pickle_dump, 'ld.pkl'),
-        np.ndarray: (pickle_dump, 'np.pkl'),
         set: (pickle_dump, 'set.pkl'),
         list: (pickle_dump, 'pkl'),
         dict: (json_dump, 'json'),
@@ -183,7 +182,6 @@ class Checkpointer():
     load_formats: dict = {
         None: (pickle_load, 'pkl'),
         LargeDict: (pickle_load, 'ld.pkl'),
-        np.ndarray: (pickle_load, 'np.pkl'),
         set: (pickle_load, 'set.pkl'),
         list: (pickle_load, 'pkl'),
         dict: (json_load, 'json'),
