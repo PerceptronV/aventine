@@ -48,6 +48,9 @@ def perseus_xml_get(
     save_dir = Path(save_dir)
     os.makedirs(save_dir, exist_ok=True)
 
+    _key = text_id # randkey(existing_keys)
+    fpath = save_dir / f'{_key}.xml'
+
     text_data = requests.get(text_stem.format(text_id))
     soup = BeautifulSoup(text_data.content, 'html.parser')
     group = soup.find('p', attrs={'class': 'xml_download'})
@@ -57,11 +60,9 @@ def perseus_xml_get(
     schema_example = soup.find('input', attrs={'name': 'doc'})['value'].strip()
     schema = f"{'+'.join(schema_example.split(' ')[:-1])}+{{}}"
 
-    xml_data = requests.get(xml_url)
-    _key = text_id # randkey(existing_keys)
-    fpath = save_dir / f'{_key}.xml'
-
     if overwrite or not os.path.exists(fpath):
+        xml_data = requests.get(xml_url)
+        
         with open(fpath, "wb") as f:
             f.write(xml_data.content)
 
