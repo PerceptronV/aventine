@@ -55,16 +55,16 @@ def preprocess(file_metadata,
 
             text = chunks[chunk_index]
             doc = cltk_nlp.analyze(text)
+            www_bundle = meanings(doc.tokens, tool_dir=tool_dir)
 
             new_lemmata, new_definitions, lemmatised = [], [], ''
 
-            for _lemma, pos, tok in zip(doc.lemmata, doc.pos, doc.tokens):
+            for _lemma, pos, (www_lemma, m) in zip(doc.lemmata, doc.pos, www_bundle):
 
                 if pos == 'PUNCT' or not re.fullmatch(ALLOWED_LEMMATA, _lemma) or _lemma in BAD_LEMMATA:
                     lemmatised += _lemma + ' '
                     continue
-
-                www_lemma, www_meaning = meanings(tok, tool_dir=tool_dir)
+                
                 lemma = _lemma if www_lemma == '' else www_lemma
                 lemmatised += lemma + ' '
                 _k = lemma          # _k = f'{lemma} ({pos})'
@@ -81,9 +81,9 @@ def preprocess(file_metadata,
                     r.existing_lemmata.add(_k)
                     r.root_lemmata_info[_k] = {'texts': {key}}
                     c.corpus_lemmata_info[_k] = {'count': 1, 'loc': [chunk_index]}
-
+                    
                     new_lemmata.append(lemma)
-                    new_definitions.append(www_meaning)
+                    new_definitions.append(m)
 
             r.lemmatised += lemmatised.strip()               
             r.lemmata_arr.extend(new_lemmata)

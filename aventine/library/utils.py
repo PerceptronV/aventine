@@ -53,10 +53,15 @@ _unk = re.compile(r'UNKNOWN')
 
 def combine(meaning, meta):
     if meaning == '':
-        return meta.strip()
+        return meta
+    if meta == '':
+        return meaning
     return meaning + f" [root/prefix/suffix information: {meta}]"
 
 def parse_www_output(output, word):
+    if re.search(_unk, output):
+        return '', ''
+    
     lines = output.split('\n')
 
     body = []
@@ -89,8 +94,8 @@ def parse_www_output(output, word):
     body = ' '.join(body).strip()
     return combine(body, meta), lemma
 
-def meanings(word, tool_dir):
-    process = subprocess.Popen(["meanings", word],
+def meanings(words, tool_dir):
+    process = subprocess.Popen(["meanings", ' '.join(words)],
                                 stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE,
@@ -100,12 +105,11 @@ def meanings(word, tool_dir):
     process.stdin.write(os.linesep * 5)
     process.stdin.flush()
     out = process.stdout.read().strip()
-    out = re.sub(r'\r', '', out)
-
-    if re.search(_unk, out):
-        return '', ''
+    out = re.sub(r'[\r\*]', '', out)
     
-    return parse_www_output(out, word)
+    ret = [parse_www_output(o, w) for o, w in zip(out.split('\n\n'), words)]
+    assert len(ret) == len(words)
+    return ret
 
 
 class Bundler():
