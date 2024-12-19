@@ -20,7 +20,7 @@ First ensure that you have an isolated Python environment set up (we encourage u
 
 2. Run the onboarding script to use pre-indexed data provided by the authors of Aventine. It is IMPORTANT that you run this command in the root directory of the repository; i.e. where you installed Aventine from.
     ```bash
-    aventine-setup
+    aventine-download
     ```
 
 3. Extract the [relevant binaries](./aventine/tools/dist/) of Whitaker's Words for your operating system into [`aventine/tools/bin`](./aventine/tools/bin/).

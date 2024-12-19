@@ -33,7 +33,7 @@ WORD2VEC_DIMS = 300
 
 ###############################
 
-INDEX_DATA_GID = '1O81jdGmR0VTiomsQVagX6OalOsTtClrB'
+INDEX_DATA_GID = '1M-lNKVDhXH0j24CQW2FEW_cD4XHRNKx-'
 
 QUICKSTART_DOCUMENTS = {
     'Aeneid': '1999.02.0055',

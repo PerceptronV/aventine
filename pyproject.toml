@@ -3,8 +3,8 @@ name = "aventine"
 version = "0.0.1"
 description = "Exploring objects of the Roman world through literature."
 dependencies = [
-    "flask", "cltk", "sentence_transformers", "gensim",
-    "beautifulsoup4", "lxml", "tqdm", "gdown"
+    "flask", "waitress", "cltk", "sentence_transformers",
+    "gensim", "beautifulsoup4", "lxml", "tqdm", "gdown"
 ]
 
 [build-system]
@@ -12,7 +12,8 @@ requires = ["flit_core<4"]
 build-backend = "flit_core.buildapi"
 
 [project.scripts]
-aventine-setup = "aventine.library.onboarding:run"
+aventine-download = "aventine.library.onboarding:download"
+aventine-quickstart = "aventine.library.onboarding:quickstart"
 
 [project.optional-dependencies]
-dev = ["pandas"]
+dev = ["build", "pandas"]

@@ -1,4 +1,6 @@
 import re
+import os
+import warnings
 from tqdm import tqdm
 from pathlib import Path
 
@@ -11,7 +13,7 @@ from aventine.library.config import ROOT_FINGERPRINT, CORPUS_FINGERPRINT
 from aventine.library.config import ALLOWED_LEMMATA, BAD_LEMMATA
 from aventine.library.config_ml import SENTENCE_TRANSFORMER_MODEL as ENG_MODEL
 from aventine.library.config_ml import WORD_EMBEDDING_MODEL as LAT_MODEL
-from aventine.library.wordvec import train_word2vec_model
+from aventine.library.wordvec import Corpus, train_word2vec_model
 from aventine.library.utils import Checkpointer
 from aventine.library.utils import meanings
 from aventine.library.utils import strfseconds, get_null, replace_if_none
@@ -108,10 +110,16 @@ def preprocess(file_metadata: dict,
             corpus_ckpt.save(c)
         
         # Final word2vec pass
-        model = train_word2vec_model(
-            corpus_path=save_dir / key / 'lemmatised.txt'
-        )
-        model.save(str(save_dir / key / 'word2vec.model'))
+        word2vec_fpath = str(save_dir / key / 'word2vec.model')
+        if os.path.exists(word2vec_fpath):
+            from gensim.models import Word2Vec
+            model = Word2Vec.load(word2vec_fpath)
+            warnings.warn(f'Word2Vec model already exists at {word2vec_fpath}.')
+        else:
+            model = train_word2vec_model(
+                Corpus(save_dir / key / 'lemmatised.txt')
+            )
+            model.save(word2vec_fpath)
 
         return model
     
