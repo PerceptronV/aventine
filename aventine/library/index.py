@@ -63,7 +63,6 @@ def preprocess(file_metadata,
                 lemma = doc.lemmata[i]
 
                 if not re.fullmatch(ALLOWED_LEMMATA, lemma) or lemma in BAD_LEMMATA:
-                    lemmatised += lemma + ' '
                     continue
 
                 lemmata.append(lemma)
