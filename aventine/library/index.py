@@ -55,18 +55,19 @@ def preprocess(file_metadata,
 
             text = chunks[chunk_index]
             doc = cltk_nlp.analyze(text)
-            www_bundle = meanings(doc.tokens, tool_dir=tool_dir)
 
-            new_lemmata, new_definitions, lemmatised = [], [], ''
+            word_filter = [e for e, pos in enumerate(doc.pos) if pos != 'PUNCT']
+            lemmata, new_lemmata, new_defs = [], [], []
 
-            for _lemma, pos, (www_lemma, m) in zip(doc.lemmata, doc.pos, www_bundle):
-
-                if pos == 'PUNCT' or not re.fullmatch(ALLOWED_LEMMATA, _lemma) or _lemma in BAD_LEMMATA:
+            for i in word_filter:
+                _lemma, tok = doc.lemmata[i], doc.tokens[i]
+                if not re.fullmatch(ALLOWED_LEMMATA, _lemma) or _lemma in BAD_LEMMATA:
                     lemmatised += _lemma + ' '
                     continue
                 
-                lemma = _lemma if www_lemma == '' else www_lemma
-                lemmatised += lemma + ' '
+                wl, wm = meanings(tok, tool_dir=tool_dir)
+                lemma = _lemma if wl == '' else wl
+                lemmata.append(lemma)
                 _k = lemma          # _k = f'{lemma} ({pos})'
 
                 if _k in r.existing_lemmata:
@@ -83,15 +84,15 @@ def preprocess(file_metadata,
                     c.corpus_lemmata_info[_k] = {'count': 1, 'loc': [chunk_index]}
                     
                     new_lemmata.append(lemma)
-                    new_definitions.append(m)
-
-            r.lemmatised += lemmatised.strip()               
+                    new_defs.append(wm)
+            
             r.lemmata_arr.extend(new_lemmata)
             r.lat_embeddings.extend([
                 replace_if_none(lat_model.get_word_vector(w), lat_none) for w in new_lemmata
             ])
-            r.definitions.extend(new_definitions)
-            r.eng_embeddings.extend(eng_model.encode(new_definitions))
+            r.definitions.extend(new_defs)
+            r.eng_embeddings.extend(eng_model.encode(new_defs))
+            c.lemmatised += ' '.join(lemmata)
 
             r.info['num_lemmata'] = len(r.root_lemmata_info)
             c.meta['num_lemmata'] = len(c.corpus_lemmata_info)

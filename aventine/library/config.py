@@ -6,7 +6,6 @@ from aventine.library.utils import LargeDict
 
 
 ROOT_FINGERPRINT = {
-    'lemmatised': str,
     'lemmata_arr': list,
     'lat_embeddings': list,
     'definitions': list,
@@ -18,6 +17,7 @@ ROOT_FINGERPRINT = {
 
 CORPUS_FINGERPRINT = {
     'meta': dict,
+    'lemmatised': str,
     'corpus_lemmata_info': dict
 }
 

@@ -106,8 +106,8 @@ def parse_www_output(output, word):
     body = ' '.join(body).strip()
     return combine(body, meta), lemma
 
-def meanings(words, tool_dir):
-    process = subprocess.Popen(["meanings", ' '.join(words)],
+def meanings(word, tool_dir):
+    process = subprocess.Popen(["meanings", word],
                                 stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE,
@@ -119,9 +119,7 @@ def meanings(words, tool_dir):
     out = process.stdout.read().strip()
     out = re.sub(r'[\r\*]', '', out)
     
-    ret = [parse_www_output(o, w) for o, w in zip(out.split('\n\n'), words)]
-    assert len(ret) == len(words)
-    return ret
+    return parse_www_output(out, word)
 
 
 class Bundler():
