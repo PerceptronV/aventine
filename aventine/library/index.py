@@ -60,16 +60,15 @@ def preprocess(file_metadata,
             lemmata, new_lemmata, new_defs = [], [], []
 
             for i in word_filter:
-                _lemma, tok = doc.lemmata[i], doc.tokens[i]
-                if not re.fullmatch(ALLOWED_LEMMATA, _lemma) or _lemma in BAD_LEMMATA:
-                    lemmatised += _lemma + ' '
-                    continue
-                
-                wl, wm = meanings(tok, tool_dir=tool_dir)
-                lemma = _lemma if wl == '' else wl
-                lemmata.append(lemma)
-                _k = lemma          # _k = f'{lemma} ({pos})'
+                lemma = doc.lemmata[i]
 
+                if not re.fullmatch(ALLOWED_LEMMATA, lemma) or lemma in BAD_LEMMATA:
+                    lemmatised += lemma + ' '
+                    continue
+
+                lemmata.append(lemma)
+                
+                _k = lemma
                 if _k in r.existing_lemmata:
                     if key not in r.root_lemmata_info[_k]['texts']:
                         r.root_lemmata_info[_k]['texts'].add(key)
@@ -83,8 +82,9 @@ def preprocess(file_metadata,
                     r.root_lemmata_info[_k] = {'texts': {key}}
                     c.corpus_lemmata_info[_k] = {'count': 1, 'loc': [chunk_index]}
                     
+                    www_meaning = meanings(doc.tokens[i], tool_dir=tool_dir)
                     new_lemmata.append(lemma)
-                    new_defs.append(wm)
+                    new_defs.append(www_meaning)
             
             r.lemmata_arr.extend(new_lemmata)
             r.lat_embeddings.extend([

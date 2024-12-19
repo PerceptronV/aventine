@@ -51,8 +51,8 @@ def clock_title(name):
 
 
 def normalise_text(text: str, allowed_symbols, allowed_puncts):
-    text = text.lower()
     text = unicodedata.normalize('NFKC', text)
+    text = text.lower()
     text = re.sub(rf'[^{allowed_symbols}]', '', text)
     text = re.sub(rf'([{allowed_puncts}])', r' \1 ', text)
     text = re.sub(r'[ ]+', ' ', text)
@@ -79,17 +79,12 @@ def parse_www_output(output, word):
     body = []
     meta = []
     greedy = []
-    lemma = ''
     matched = False
     triggered = False
 
     for i in lines:
         if re.search(_flag, i):
-            if triggered:
-                lemma = ''
-            else:
-                lemma = i.split(',')[0]
-                triggered = True
+            triggered = True
             matched = i.startswith(word)
         elif matched:
             greedy.append(i.strip())
@@ -101,10 +96,10 @@ def parse_www_output(output, word):
     meta = ' '.join(meta).strip()
     greedy = ' '.join(greedy).strip()
     if greedy != '':
-        return combine(greedy, meta), lemma
+        return combine(greedy, meta)
 
     body = ' '.join(body).strip()
-    return combine(body, meta), lemma
+    return combine(body, meta)
 
 def meanings(word, tool_dir):
     process = subprocess.Popen(["meanings", word],

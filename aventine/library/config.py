@@ -28,7 +28,7 @@ SMALL_SEP = ' '
 CHUNK_SEP = '\n'
 
 ALLOWED_PUNCTS = r",.?!()"
-ALLOWED_SYMBOLS = r"a-zA-Z" + ALLOWED_PUNCTS + r" \n"
+ALLOWED_SYMBOLS = r"a-z" + ALLOWED_PUNCTS + r" \n"
 
 ALLOWED_LEMMATA = re.compile(r"[a-zA-Z]+")
 BAD_LEMMATA = {'con', 'unietvicensimus'}
