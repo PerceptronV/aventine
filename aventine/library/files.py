@@ -11,7 +11,6 @@ from bs4.element import Tag
 
 from aventine.library.config import SMALL_SEP, CHUNK_SEP
 from aventine.library.config import ALLOWED_SYMBOLS, ALLOWED_PUNCTS
-from aventine.library.utils import randkey
 
 
 def perseus_collect(

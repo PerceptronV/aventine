@@ -66,6 +66,7 @@ def preprocess(file_metadata,
 
                 www_lemma, www_meaning = meanings(tok, tool_dir=tool_dir)
                 lemma = _lemma if www_lemma == '' else www_lemma
+                lemmatised += lemma + ' '
                 _k = f'{lemma} ({pos})'
 
                 if _k in r.existing_lemmata:
