@@ -14,7 +14,7 @@
     <code id="lang-tag">eng</code>
   </div>
   <div>
-    <code id="texts">Everything</code>
+    <code id="texts">ALL</code>
   </div>
 </div>
 
@@ -71,7 +71,7 @@
     let texts = Array.from(this.selectedOptions).map(x => x.innerText);
     let text_tag = document.getElementById('texts');
     if (texts.length === 0) {
-      text_tag.innerText = 'Everything';
+      text_tag.innerText = 'ALL';
     } else {
       text_tag.innerText = texts.join(', ');
     }
