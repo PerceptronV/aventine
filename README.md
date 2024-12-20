@@ -43,7 +43,7 @@ The Latin texts used in generating the indexed data (i.e. the files that `aventi
 [David Sanson](https://github.com/dsanson)'s binaries of [William Whitaker's WORDS]() were used to provide English meanings for the Latin lemmata. Read the [README](./aventine/tools/dist/README.md) in [tools/dist](./aventine/tools/dist/) for further licensing and related information.
 
 Aventine depends heavily on:
-- [Flask](https://flask.palletsprojects.com/en/stable/) and [Waitress](https://docs.pylonsproject.org/projects/waitress/en/latest/) for the web framework.
+- [Flask](https://flask.palletsprojects.com/en/stable/) and [Gunicorn](https://gunicorn.org/) for the web framework.
 - [The Classical Language Toolkit (cltk)](http://cltk.org/) for Latin lemmatisation and many other miscellaneous processing tasks.
 - [SentenceTransformers](https://sbert.net/) and in particular, the '[Alibaba-NLP/gte-base-en-v1.5](https://huggingface.co/Alibaba-NLP/gte-base-en-v1.5)' model, for vectorising English sentences.
 - [Gensim](https://radimrehurek.com/gensim/) for word2vec vector training.
