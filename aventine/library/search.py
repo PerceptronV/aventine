@@ -194,7 +194,7 @@ class AventineSearch():
             if lemma in self.r.existing_lemmata:
                 meaning = self.root_definitions[lemma_idx]
             else:
-                meaning = meanings(lemma, tool_dir=self.tool_dir)
+                meaning = '' # @change meanings(lemma, tool_dir=self.tool_dir)
 
             if (language == 'eng' and meaning in repeated) or \
                (language == 'lat' and lemma in repeated):
