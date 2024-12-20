@@ -28,6 +28,6 @@ def search():
     g.to_percentage = lambda x : f"{x:.3%}"
 
     if data is None:
-        flash("Bad query or language.")
+        return render_template('error.html')
     else:
         return render_template('search.html')

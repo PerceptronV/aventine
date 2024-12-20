@@ -1,0 +1,18 @@
+{% extends 'pages.html' %}
+
+{% block title %}
+  Search Results for "{{ g.query }}"
+  ({{ {'eng': 'English', 'lat': 'Latin'}[g.language] }})
+{% endblock %}
+
+{% block header %}
+<div class="search-info">
+  <h3>Search Results</h3>
+</div>
+{% endblock %}
+
+{% block content %}
+Oops, Aventine does not currently recognise your query.
+
+Please try something else!
+{% endblock %}
