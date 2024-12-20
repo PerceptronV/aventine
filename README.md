@@ -23,9 +23,16 @@ First ensure that you have an isolated Python environment set up (we encourage u
     aventine-download
     ```
 
+    Alternatively, if you wish to rebuild the index, run:
+    ```bash
+    aventine-quickstart
+    ```
+
 3. Extract the [relevant binaries](./aventine/tools/dist/) of Whitaker's Words for your operating system into [`aventine/tools/bin`](./aventine/tools/bin/).
 
 ## Deployment
+
+Because the Aventine system is in indexing mode by default, you have to manually go into [params.py](./aventine/library/params.py) and replace `MODE = 'INDEX'` with `MODE = 'SEARCH'`. After this, you can test your system out.
 
 ### Development
 
