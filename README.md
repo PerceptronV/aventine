@@ -27,17 +27,14 @@ First ensure that you have an isolated Python environment set up (we encourage u
 
 ## Deployment
 
-Run the following to initialise the Aventine database:
+### Development
+
+Run the following to spin up a debug server:
 ```
-flask --app aventine init-db
+flask --app aventine run --debug
 ```
 
-Then run the following to spin up a debug server:
-```
-flask --app flaskr run --debug
-```
-
-For production, set a private key.
+### Production
 
 ## Credits
 

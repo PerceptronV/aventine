@@ -182,7 +182,7 @@ class AventineSearch():
         # Given arbitrary arrays `lemma` and `sims`
         idx = 0
         found = 0
-        data = {}
+        data = []
         sorted = np.flip(np.argsort(sims))
         
         while found < results and idx < len(sorted):
@@ -198,32 +198,32 @@ class AventineSearch():
                     meaning = self.root_definitions[lemma_idx]
                 else:
                     meaning = meanings(lemma, tool_dir=self.tool_dir)
-                data[found] = {
+                data.append({
                     'score': float(sims[lemma_idx]),
                     'lemma': lemma,
                     'definition': meaning,
                     'texts': '',
                     'links': ''
-                }
+                })
                 idx += 1
                 found += 1
 
             elif lemma in self.r.existing_lemmata:
                 intersect = self.r.root_lemmata_info[lemma]['texts'].intersection(texts)
                 if intersect:
-                    urls = []
+                    urls = {}
                     for text_id in intersect:
                         quotes = self.text_ckpts[text_id].corpus_lemmata_info[lemma]['loc']
-                        urls.extend([perseus_url(self.text_metas[text_id],
-                                                 self.text_metas[text_id]['index'][quote_id])
-                                    for quote_id in quotes])
-                    data[found] = {
+                        urls[text_id] = [perseus_url(self.text_metas[text_id],
+                                                     self.text_metas[text_id]['index'][quote_id])
+                                         for quote_id in quotes]
+                    data.append({
                         'score': float(sims[lemma_idx]),
                         'lemma': lemma,
                         'definition': self.root_definitions[lemma_idx],
                         'texts': list(intersect),
                         'links': urls
-                    }
+                    })
                     found += 1
             
             idx += 1
