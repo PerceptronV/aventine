@@ -14,6 +14,7 @@ from cltk import NLP
 from gensim.models import Word2Vec
 from sentence_transformers import SentenceTransformer
 
+from aventine.library.params import MODE
 from aventine.library.params import ROOT_FINGERPRINT, CORPUS_FINGERPRINT
 from aventine.library.params import ALLOWED_SYMBOLS, ALLOWED_PUNCTS
 from aventine.library.params import ALLOWED_LEMMATA, BAD_LEMMATA
@@ -81,7 +82,7 @@ class AventineSearch():
         self.verbose = verbose
         vprint = lambda x: print(x) if verbose else None
 
-        if not os.path.exists(sources_dir):
+        if MODE != 'SEARCH':
             return None
 
         self.sources_dir = Path(sources_dir)

@@ -50,3 +50,5 @@ QUICKSTART_DOCUMENTS = {
     'Carmina': '1999.02.0003',
     'Metamorphoses': '1999.02.0029'
 }
+
+MODE = 'SEARCH'      # 'INDEX' or 'SEARCH'
