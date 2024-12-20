@@ -25,7 +25,7 @@
 {% block scripts %}
 <script>
     document.getElementById('navsearch').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
+        if (e.key === 'Enter' && this.value !== '') {
             window.location.href = "{{url_for('search.search')}}?query="+this.value+"&language={{g.language}}&texts={{g.texts}}";
         }
     });

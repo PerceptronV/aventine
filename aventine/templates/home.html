@@ -35,6 +35,9 @@
 {% block scripts %}
 <script>
   function go_search() {
+    if (document.getElementById('search-bar').value === '') {
+      return false;
+    }
     let texts = Array.from(document.getElementById('text-selector').selectedOptions).map(x => x.value);
     texts = texts.join(',');
     if (texts === '') {
