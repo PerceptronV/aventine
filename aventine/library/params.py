@@ -51,4 +51,4 @@ QUICKSTART_DOCUMENTS = {
     'Metamorphoses': '1999.02.0029'
 }
 
-MODE = 'SEARCH'      # 'INDEX' or 'SEARCH'
+MODE = 'INDEX'      # 'INDEX' or 'SEARCH'
