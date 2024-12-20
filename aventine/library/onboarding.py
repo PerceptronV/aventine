@@ -4,10 +4,11 @@ import tarfile
 from pathlib import Path
 
 from aventine.library.config import INDEX_DATA_GID, QUICKSTART_DOCUMENTS
+from aventine.library.config import DATA_DIR, SOURCES_DIR, INDEX_DIR, TOOL_DIR
 
 
 def download(
-        data_dir: Path = 'aventine/data'
+        data_dir: Path = DATA_DIR
     ):
 
     data_dir = Path(data_dir)
@@ -23,9 +24,9 @@ def download(
 
 
 def quickstart(
-        sources_dir: Path = 'aventine/data',
-        index_dir: Path = 'aventine/data/dumps',
-        tool_dir: Path ='aventine/tools/bin'
+        sources_dir: Path = SOURCES_DIR,
+        index_dir: Path = INDEX_DIR,
+        tool_dir: Path = TOOL_DIR
     ):
     print('Beginning indexing of all sources in `config.QUICKSTART_DOCUMENTS`. This may take a while...\n')
 

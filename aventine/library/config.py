@@ -1,7 +1,23 @@
 import re
+import os
 
 from aventine.library.utils import LargeDict
 
+
+SMALL_SEP = ' '
+CHUNK_SEP = '\n'
+ALLOWED_PUNCTS = r",.?!()"
+ALLOWED_SYMBOLS = r"a-z" + ALLOWED_PUNCTS + r" \n"
+
+ALLOWED_LEMMATA = re.compile(r"[a-z]+")
+BAD_LEMMATA = {'con', 'unietvicensimus'}
+
+###############################
+
+DATA_DIR = 'aventine/data'
+SOURCES_DIR = os.path.join(DATA_DIR, 'sources')
+INDEX_DIR = os.path.join(DATA_DIR, 'dumps')
+TOOL_DIR = 'aventine/tool/bin'
 
 ROOT_FINGERPRINT = {
     'lemmata_arr': list,
@@ -12,21 +28,11 @@ ROOT_FINGERPRINT = {
     'existing_lemmata': set,
     'info': dict
 }
-
 CORPUS_FINGERPRINT = {
     'meta': dict,
     'lemmatised': str,
     'corpus_lemmata_info': dict
 }
-
-SMALL_SEP = ' '
-CHUNK_SEP = '\n'
-
-ALLOWED_PUNCTS = r",.?!()"
-ALLOWED_SYMBOLS = r"a-z" + ALLOWED_PUNCTS + r" \n"
-
-ALLOWED_LEMMATA = re.compile(r"[a-z]+")
-BAD_LEMMATA = {'con', 'unietvicensimus'}
 
 WORD2VEC_EPOCHS = 30
 WORD2VEC_DIMS = 300
