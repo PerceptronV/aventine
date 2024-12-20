@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block nav %}
+<nav class="navbar bg-body-tertiary">
+    <div class="container-fluid d-flex p-2 justify-content-around align-items-center">
+        <a class="navbar-brand" href="{{ url_for('home.index') }}">
+            <img src="{{ url_for('static', filename='media/logo.svg') }}" alt="Logo" width="80" height="80" class="d-inline-block align-text-top">
+        </a>
+        <div>
+            <div class="input-group input-group-lg mb-3">
+                <input id='navsearch' class="form-control me-2" type="search" placeholder="Search" aria-label="Search" value="{{g.query}}">
+            </div>
+            <div>
+                <code>{{ g.language }}</code> <code>{{ g.titles }}</code>
+            </div>
+        </div>
+        <div>
+            {% block header %}
+            {% endblock %}
+        </div>
+    </div>
+</nav>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.getElementById('navsearch').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            window.location.href = "{{url_for('search.search')}}?query="+this.value+"&language={{g.language}}&texts={{g.texts}}";
+        }
+    });
+</script>
+{% endblock %}

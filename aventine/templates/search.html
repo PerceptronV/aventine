@@ -1,0 +1,48 @@
+{% extends 'pages.html' %}
+
+{% block title %}
+  Search Results for "{{ g.query }}"
+  ({{ {'eng': 'English', 'lat': 'Latin'}[g.language] }})
+{% endblock %}
+
+{% block header %}
+<div class="search-info">
+  <h3>Search Results</h3>
+</div>
+{% endblock %}
+
+{% block content %}
+
+<table class="results-table table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">Similarity</th>
+      <th scope="col">Lemma</th>
+      <th scope="col">Definition</th>
+      <th scope="col">Sources</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for result in g.data %}
+    <tr>
+      <th scope="row"><code>{{ g.to_percentage(result['score']) }}</code></th>
+      <td><a href="{{ url_for('search.search') + '?query='+result['lemma']+'&language=lat&texts='+g.texts }}">
+        {{ result['lemma'] }}
+      </a></td>
+      <td><a href="{{ url_for('search.search') + '?query='+result['definition']+'&language=eng&texts='+g.texts }}">
+        {{ result['definition'] }}
+      </a></td>
+      <td>
+        {% for text_id in result['texts'] %}
+        <p>{{ g.id2title[text_id] }}: 
+          {% for link, quote in result['links'][text_id] %}
+          [<a href="{{ link }}">{{ quote }}</a>]
+          {% endfor %}
+        </p>
+        {% endfor %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

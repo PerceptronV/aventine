@@ -1,0 +1,118 @@
+:root {
+    --primary: #1d436b;
+    --primary-light: #3a7ca5;
+    --primary-delta: #53abb0;
+    --secondary: #dfba4a;
+    --secondary-light: #f7df8e;
+    --secondary-delta: #f3ecde;
+}
+
+body {
+    font-family: "Cormorant", serif;
+    font-optical-sizing: auto;
+    font-weight: 550;
+    font-style: normal;
+}
+
+a {
+    color: var(--primary-light);
+    text-decoration: none;
+    background-image: linear-gradient(var(--secondary-delta), var(--secondary-delta)),
+                      linear-gradient(var(--primary-delta), var(--primary-delta));
+    background-size: 100% 0.05em, 0% 0.1em;
+    background-position: 100% 100%, 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size 0.2s ease-in-out;
+    }
+a:hover,
+a:focus,
+a:active {
+    background-size: 0% 0.05em, 100% 0.1em;
+}
+
+code {
+    background-color: var(--primary);
+    color: var(--secondary-delta);
+    padding: 0.2em 0.4em;
+    border-radius: 0.5em;
+}
+
+::-moz-selection { /* Code for Firefox */
+    color: var(--primary-delta);
+    background: var(--secondary-delta);
+}
+
+::selection {
+    color: var(--primary-delta);
+    background: var(--secondary-delta);
+}
+
+.container {
+    margin: auto;
+    padding-left: 7%;
+    padding-right: 7%;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.search-info {
+    overflow: hidden;
+    text-align: right;
+}
+
+.results-table{
+    margin: auto;
+    text-align: left;
+    th, td {
+        padding: 15px;
+    };
+}
+
+.navbar-search{
+    width: 60%;
+}
+
+#main-image{
+    margin-top: 2vh;
+}
+
+.main-header{
+    color: var(--primary);
+    margin-top: 2vh;
+}
+
+.main-search{
+    color: var(--primary);
+}
+
+#search-bar{
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+#search-btn{
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+#search-btn:hover,
+#search-btn:focus,
+#search-btn:active {
+    background-color: var(--primary);
+    color: var(--secondary-delta);
+}
+
+#text-selector{
+    color: var(--primary);
+    overflow-y: hidden;
+}
+
+#tinybar{
+    margin-top: 4vh;
+}
+
+#flex-switch{
+    background-color: var(--secondary-delta);
+    border-color: None;
+    outline: None;
+}

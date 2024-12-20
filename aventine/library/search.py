@@ -93,11 +93,10 @@ class AventineSearch():
             text_id: get_metadata(self.metadata_dir, text_id)
             for text_id in self.all_docs
         }
-        self.title2id = {
-            get_metadata(self.metadata_dir, text_id)['title']: text_id
+        self.id2title = {
+            text_id: get_metadata(self.metadata_dir, text_id)['title']
             for text_id in self.all_docs
-        } | {'root': 'root'}
-        self.titles2ids = lambda x: [self.title2id[i] for i in x]
+        }
         
         vprint('|- Loading checkpoints...')
         root_ckpt = Checkpointer(self.index_dir/'root', ROOT_FINGERPRINT)
@@ -149,7 +148,7 @@ class AventineSearch():
             sent = self.eng_model.encode(query)
             sims = get_similarities(sent, self.root_eng_embeddings)
             lemmata = self.root_lemmata_arr
-            repeated = set()
+            repeated = set([query])
         
         elif language == 'lat':
             if scope == 'universal':
@@ -188,22 +187,23 @@ class AventineSearch():
         while found < results and idx < len(sorted):
             lemma_idx = sorted[idx]
             lemma = lemmata[lemma_idx]
+            if lemma in self.r.existing_lemmata:
+                meaning = self.root_definitions[lemma_idx]
+            else:
+                meaning = meanings(lemma, tool_dir=self.tool_dir)
 
-            if lemma in repeated:
+            if (language == 'eng' and meaning in repeated) or \
+               (language == 'lat' and lemma in repeated):
                 idx += 1
                 continue
 
             if len(texts) == 0:
-                if lemma in self.r.existing_lemmata:
-                    meaning = self.root_definitions[lemma_idx]
-                else:
-                    meaning = meanings(lemma, tool_dir=self.tool_dir)
                 data.append({
                     'score': float(sims[lemma_idx]),
                     'lemma': lemma,
                     'definition': meaning,
-                    'texts': '',
-                    'links': ''
+                    'texts': [],
+                    'links': {}
                 })
                 idx += 1
                 found += 1
@@ -214,8 +214,9 @@ class AventineSearch():
                     urls = {}
                     for text_id in intersect:
                         quotes = self.text_ckpts[text_id].corpus_lemmata_info[lemma]['loc']
-                        urls[text_id] = [perseus_url(self.text_metas[text_id],
-                                                     self.text_metas[text_id]['index'][quote_id])
+                        urls[text_id] = [(perseus_url(self.text_metas[text_id],
+                                                      self.text_metas[text_id]['index'][quote_id]),
+                                          self.text_metas[text_id]['index'][quote_id])
                                          for quote_id in quotes]
                     data.append({
                         'score': float(sims[lemma_idx]),
@@ -232,4 +233,7 @@ class AventineSearch():
     
     @clock_title('Aventine search engine query')
     def search(self, *args, **kwargs):
-        return self._search(*args, **kwargs)
+        try:
+            return self._search(*args, **kwargs)
+        except:
+            return None

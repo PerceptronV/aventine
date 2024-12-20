@@ -1,14 +1,14 @@
 import os
 
 from flask import Flask
+from aventine.library.engines import default_engine as engine
 
 
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
-        SECRET_KEY='dev',
-        DATABASE=os.path.join(app.instance_path, 'aventine.sqlite'),
+        SECRET_KEY='dev'
     )
 
     if test_config is None:
@@ -24,17 +24,17 @@ def create_app(test_config=None):
     except OSError:
         pass
     
-    # initialise database
-    from . import db
-    db.init_app(app)
-
+    
     # configure blueprints and paths
+
+    from . import home
+    app.register_blueprint(home.bp)
+    app.add_url_rule('/', endpoint='index')
 
     from . import search
     app.register_blueprint(search.bp)
-    app.add_url_rule('/', endpoint='index')
 
-    from . import add_src
-    app.register_blueprint(add_src.bp)
+    # from . import api
+    # app.register_blueprint(api.bp)
 
     return app
