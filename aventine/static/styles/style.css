@@ -63,6 +63,7 @@ code {
 .results-table{
     margin: auto;
     text-align: left;
+    overflow-x: hidden;
     th, td {
         padding: 15px;
     };
