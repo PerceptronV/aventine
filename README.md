@@ -36,6 +36,11 @@ flask --app aventine run --debug
 
 ### Production
 
+Run a production server on a Linux system using:
+```
+gunicorn -b :8080 -w 1 "aventine:create_app()"
+```
+
 ## Credits
 
 The Latin texts used in generating the indexed data (i.e. the files that `aventine-download` downloads) were derived from sources in [Perseus Digital Library](https://www.perseus.tufts.edu/hopper/). Credit goes to the Perseus Digital Library in providing these texts; all indexed data is therefore licensed under a [Creative Commons Attribution-ShareAlike 3.0 United States License](https://creativecommons.org/licenses/by-sa/3.0/us/).
