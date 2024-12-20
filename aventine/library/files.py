@@ -3,7 +3,7 @@ import re
 import json
 import requests
 from pathlib import Path
-from urllib.parse import unquote
+from urllib.parse import quote, unquote
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 
@@ -180,4 +180,5 @@ def perseus_url(
     quote_id: str,
     stem: str = "https://www.perseus.tufts.edu/hopper/text?doc={}&fromdoc=Perseus:text:{}"
 ) -> str:
-    return stem.format(metadata['schema'].format(quote_id), metadata['text_id'])
+    url = stem.format(metadata['schema'].format(quote_id), metadata['text_id'])
+    return quote(url, safe='.:/?&+=')

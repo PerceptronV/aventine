@@ -16,4 +16,4 @@ aventine-download = "aventine.library.onboarding:download"
 aventine-quickstart = "aventine.library.onboarding:quickstart"
 
 [project.optional-dependencies]
-dev = ["build", "pandas"]
+dev = ["build", "ipykernel", "pandas"]
