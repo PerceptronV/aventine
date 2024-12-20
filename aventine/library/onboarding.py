@@ -24,7 +24,7 @@ def download(
 
 def quickstart(
         sources_dir: Path = 'aventine/data',
-        dumps_dir: Path = 'aventine/data/dumps',
+        index_dir: Path = 'aventine/data/dumps',
         tool_dir: Path ='aventine/tools/bin'
     ):
     print('Beginning indexing of all sources in `config.QUICKSTART_DOCUMENTS`. This may take a while...\n')
@@ -36,11 +36,11 @@ def quickstart(
     for doc in QUICKSTART_DOCUMENTS:
         metadata = perseus_xml_get(QUICKSTART_DOCUMENTS[doc], sources_dir)
         metadata = perseus_xml2txt(metadata, sources_dir)
-        preprocess(metadata, dumps_dir, tool_dir=tool_dir)
+        preprocess(metadata, index_dir, tool_dir=tool_dir)
         pass
     
     print('\nGenerating overall word embeddings. This may take a while...')
-    model = train_word2vec_model(MultiCorpus(dumps_dir))
-    model.save(os.path.join(dumps_dir, 'root', 'word2vec.model'))
+    model = train_word2vec_model(MultiCorpus(index_dir))
+    model.save(os.path.join(index_dir, 'root', 'word2vec.model'))
 
     print('\nIndexing complete!')
