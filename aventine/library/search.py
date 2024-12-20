@@ -81,6 +81,9 @@ class AventineSearch():
         self.verbose = verbose
         vprint = lambda x: print(x) if verbose else None
 
+        if not os.path.exists(sources_dir):
+            return None
+
         self.sources_dir = Path(sources_dir)
         self.index_dir = Path(index_dir)
         self.tool_dir = Path(tool_dir)
