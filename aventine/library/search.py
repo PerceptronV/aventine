@@ -14,11 +14,11 @@ from cltk import NLP
 from gensim.models import Word2Vec
 from sentence_transformers import SentenceTransformer
 
-from aventine.library.config import ROOT_FINGERPRINT, CORPUS_FINGERPRINT
-from aventine.library.config import ALLOWED_SYMBOLS, ALLOWED_PUNCTS
-from aventine.library.config import ALLOWED_LEMMATA, BAD_LEMMATA
-from aventine.library.config_ml import SENTENCE_TRANSFORMER_MODEL as ENG_MODEL
-from aventine.library.config_ml import WORD_EMBEDDING_MODEL as LAT_MODEL
+from aventine.library.params import ROOT_FINGERPRINT, CORPUS_FINGERPRINT
+from aventine.library.params import ALLOWED_SYMBOLS, ALLOWED_PUNCTS
+from aventine.library.params import ALLOWED_LEMMATA, BAD_LEMMATA
+from aventine.library.params_ml import SENTENCE_TRANSFORMER_MODEL as ENG_MODEL
+from aventine.library.params_ml import WORD_EMBEDDING_MODEL as LAT_MODEL
 from aventine.library.utils import Checkpointer
 from aventine.library.utils import meanings
 from aventine.library.utils import normalise_text

@@ -3,8 +3,8 @@ import gdown
 import tarfile
 from pathlib import Path
 
-from aventine.library.config import INDEX_DATA_GID, QUICKSTART_DOCUMENTS
-from aventine.library.config import DATA_DIR, SOURCES_DIR, INDEX_DIR, TOOL_DIR
+from aventine.library.params import INDEX_DATA_GID, QUICKSTART_DOCUMENTS
+from aventine.library.params import DATA_DIR, SOURCES_DIR, INDEX_DIR, TOOL_DIR
 
 
 def download(

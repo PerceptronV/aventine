@@ -3,7 +3,7 @@ from typing import Union
 
 from gensim.models import Word2Vec
 
-from aventine.library.config import WORD2VEC_EPOCHS, WORD2VEC_DIMS
+from aventine.library.params import WORD2VEC_EPOCHS, WORD2VEC_DIMS
 
 
 class Corpus:
