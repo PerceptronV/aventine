@@ -52,8 +52,8 @@ def argmaxk(arr, k):
 def atomise(cltk_nlp, query):
     query = re.sub(ALLOWED_PUNCTS, '', query)
     query = normalise_text(query, ALLOWED_SYMBOLS, ALLOWED_PUNCTS)
-    cltk_nlp(text=query)
-    atoms = [w.strip() for w in query.split(' ')
+    doc = cltk_nlp(text=query)
+    atoms = [w.strip() for w in doc.lemmata
              if re.fullmatch(ALLOWED_LEMMATA, w) and w not in BAD_LEMMATA]
     return atoms
 
