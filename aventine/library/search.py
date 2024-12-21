@@ -99,7 +99,7 @@ class AventineSearch():
         }
         self.id2title = {
             text_id: get_metadata(self.metadata_dir, text_id)['title']
-            for text_id in self.all_docs
+            for text_id in sorted(self.all_docs)
         }
         
         vprint('|- Loading checkpoints...')
